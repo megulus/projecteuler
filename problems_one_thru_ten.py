@@ -113,6 +113,18 @@ The largest palindrome made from the product of two 2-digit numbers is 9009 = 91
 Find the largest palindrome made from the product of two 3-digit numbers.
 '''
 
+def is_palindrome_it(digits):
+    digits_copy = list(digits)
+    while len(digits_copy) > 1:
+        if digits_copy[0] == digits_copy[-1]:
+            digits_copy.pop(0)
+            digits_copy.pop(-1)
+        else:
+            return False
+    return True
+
+
+
 def is_palindrome(digits):
     digits_copy = list(digits)
     if len(digits_copy) <= 1:
@@ -137,17 +149,18 @@ def largest_palindrome_product(lowerbound, upperbound):
     :param: upperbound - upper bound of range
     :return: largest palindromic product of two three-digit numbers
     '''
-    palindromes = []
+    maxproduct = 0
     result = {}
     for i in range(lowerbound, upperbound):
         for j in range(lowerbound, upperbound):
             product = i * j
             digits = map(int, str(product))
-            if is_palindrome(digits):
-                palindromes.append((i, j, product))
-    result['maxproduct'] = palindromes[-1][2]
-    result['factor1'] = palindromes[-1][0]
-    result['factor2'] = palindromes[-1][1]
+            if product > maxproduct:
+                if is_palindrome_it(digits):
+                    maxproduct = product
+                    result['maxproduct'] = maxproduct
+                    result['factor1'] = i
+                    result['factor2'] = j
     return result
 
 
@@ -181,8 +194,8 @@ def main():
     n = 600851475143
     largest_prime = largest_prime_factor(n)
     print 'largest prime factor of {}: {}'.format(n, largest_prime)
-    lower = 10
-    upper = 100
+    lower = 100
+    upper = 1000
     result = largest_palindrome_product(lower, upper)
     print 'largest palindrome product of factors between {} and {} is: {} x {} = {}'.format(lower, upper, result['factor1'], result['factor2'], result['maxproduct'])
 
