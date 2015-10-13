@@ -1,3 +1,4 @@
+# coding=utf-8
 from operator import *
 
 
@@ -89,19 +90,28 @@ The prime factors of 13195 are 5, 7, 13 and 29.
 What is the largest prime factor of the number 600851475143 ?
 '''
 
-def largest_prime_factor(n):
+def get_prime_factors(n):
     factor = 2
     factored = n
     n_factors = []
     n_factors.append(1)
     while reduce(mul, n_factors) < n:
-        #print n_factors, reduce(mul, n_factors), factored
         if factored % factor == 0:
             n_factors.append(factor)
             factored = factored / factor
         else:
             factor += 1
-    return max(n_factors)
+    return n_factors
+
+
+def get_largest_factor(n):
+    '''
+    :param: an integer
+    :return: the largest prime factor of n
+    '''
+    factors = get_prime_factors(n)
+    return max(factors)
+
 
 #----------------------------------------------------------------------------------------------------------------------
 
@@ -114,6 +124,11 @@ Find the largest palindrome made from the product of two 3-digit numbers.
 '''
 
 def is_palindrome_it(digits):
+    '''
+    determines iteratively whether a list of integers is palindromic
+    :param digits: list of integers
+    :return: True or False
+    '''
     digits_copy = list(digits)
     while len(digits_copy) > 1:
         if digits_copy[0] == digits_copy[-1]:
@@ -126,7 +141,12 @@ def is_palindrome_it(digits):
 
 
 def is_palindrome(digits):
-    digits_copy = list(digits)
+    '''
+    determines recursively whether a list of integers is palindromic
+    :param digits: list of integers
+    :return: True or False
+    '''
+    digits_copy = list(digits) # create copy of digits b/c this function mutates the list that is passed to it
     if len(digits_copy) <= 1:
         return True
     else:
@@ -154,7 +174,7 @@ def largest_palindrome_product(lowerbound, upperbound):
     for i in range(lowerbound, upperbound):
         for j in range(lowerbound, upperbound):
             product = i * j
-            digits = map(int, str(product))
+            digits = map(int, str(product)) # turn product into a list of its component digits
             if product > maxproduct:
                 if is_palindrome_it(digits):
                     maxproduct = product
@@ -167,9 +187,152 @@ def largest_palindrome_product(lowerbound, upperbound):
 
 
 #----------------------------------------------------------------------------------------------------------------------
+'''
+Problem 5: Smallest multiple
+2520 is the smallest number that can be divided by each of the numbers from 1 to 10 without any remainder.
+What is the smallest positive number that is evenly divisible by all of the numbers from 1 to 20?
+'''
+
+def smallest_multiple_factors(lowerbound, upperbound):
+    '''
+    This version finds the set of prime factors for all the integers in the range lowerbound - upperbound. It then finds
+    the product of that set, which should be the smallest multiple of the range.
+    :param lowerbound: an integer
+    :param upperbound: an integer
+    :return: product of the range's factors (integer)
+    '''
+    all_prime_factors = []
+    for i in range(lowerbound, upperbound + 1):
+        i_factors = get_prime_factors(i)
+        for j in all_prime_factors:
+            if j in i_factors:
+                i_factors.pop(i_factors.index(j))
+        all_prime_factors.extend(i_factors)
+    return reduce(mul, all_prime_factors)
 
 
+def smallest_multiple_iter(lowerbound, upperbound):
+    '''
+    Note: this is a brute force, make-the-computer-do-the-thinking method of solving this problem. It works, but it's
+    slow.
+    :param lowerbound: an integer
+    :param upperbound: an integer
+    :return: smallest multiple of range defined by lowerbound - upperbound
+    '''
+    multiple = None
+    dividend = upperbound # any numbers < upperbound not evenly divisible by upperbound, so start here
+    divisors = list(range(lowerbound, upperbound + 1))
+    while multiple == None:
+        if filter(lambda x: dividend % x == 0, divisors) == divisors:
+            multiple = dividend
+        else:
+            dividend += 1
+    return multiple
 
+#----------------------------------------------------------------------------------------------------------------------
+
+'''
+Problem 6: Sum Square Difference
+The sum of the squares of the first ten natural numbers is
+1^2 + 2^2 + ... + 10^2 = 385
+The square of the sum of the first ten natural numbers is
+(1 + 2 + ... + 10)^2 = 552 = 3025
+Hence the difference between the sum of the squares of the first ten natural numbers and the square of the sum is
+3025 − 385 = 2640.
+Find the difference between the sum of the squares of the first one hundred natural numbers and the square of the sum.
+'''
+
+def find_sum_square_difference(lowerbound, upperbound):
+    sum_squares = 0
+    sum_naturals = 0
+    for i in range(lowerbound, upperbound + 1):
+        square = i*i
+        sum_squares += square
+        sum_naturals += i
+    square_sum = sum_naturals * sum_naturals
+    return square_sum - sum_squares
+
+
+#----------------------------------------------------------------------------------------------------------------------
+'''
+Problem 7: 10,001st prime
+By listing the first six prime numbers: 2, 3, 5, 7, 11, and 13, we can see that the 6th prime is 13.
+What is the 10,001st prime number?
+'''
+
+def is_prime(n):
+    factors = get_prime_factors(n)
+    if len(factors) == 2:
+        return True
+    else:
+        return False
+
+
+def find_nth_prime(n):
+    primes = []
+    current = 1
+    while len(primes) < n:
+        if is_prime(current):
+            primes.append(current)
+        current += 1
+    return primes[-1]
+
+#----------------------------------------------------------------------------------------------------------------------
+
+'''
+Problem 8: Largest product in a series
+The four adjacent digits in the 1000-digit number that have the greatest product are 9 × 9 × 8 × 9 = 5832.
+Find the thirteen adjacent digits in the 1000-digit number that have the greatest product. What is the value of
+this product?
+'''
+
+def find_largest_product(series, length):
+    '''
+    :param series: integer in which the product of adjacent digits is to be found
+    :param length: number of adjacent digits that will compose the product
+    :return dictionary containing the product and the list of adjacent digits that compose it
+    '''
+    all_products = []
+    products_dict = {}
+    digits = map(int, str(series))
+    factors = []
+    while len(digits) >= length:
+        first_factor = digits.pop(0)
+        factors.append(str(first_factor))
+        product = first_factor
+        for j in range(length-1):
+            next_factor = digits[j]
+            factors.append(str(next_factor))
+            product *= next_factor
+        all_products.append(product)
+        products_dict[product] = factors
+        factors = []
+    largest_product = max(all_products)
+    largest_product_factors = products_dict[largest_product]
+    return {'product': str(largest_product), 'factors': largest_product_factors}
+
+#----------------------------------------------------------------------------------------------------------------------
+
+'''
+Problem 9: Special Pythagorean triplet
+A Pythagorean triplet is a set of three natural numbers, a < b < c, for which,
+a^2 + b^2 = c^2
+For example, 3^2 + 4^2 = 9 + 16 = 25 = 5^2.
+There exists exactly one Pythagorean triplet for which a + b + c = 1000.
+Find the product abc
+'''
+
+def is_pythagorean(a, b, c):
+    if (a < b and b < c) and (a**2 + b**2 == c**2):
+        return True
+    else:
+        return False
+
+def find_special_pythagorean(target_sum):
+    #i, j, k = 0
+    special_triplet_product = 0
+    while special_triplet_product == 0:
+        for i in range(target_sum + 1):
 
 
 
@@ -182,6 +345,7 @@ def largest_palindrome_product(lowerbound, upperbound):
 #----------------------------------------------------------------------------------------------------------------------
 
 def main():
+    '''
     # Problem 1:
     n = 1000
     multsum = multiples_of_three_and_five(n)
@@ -194,10 +358,39 @@ def main():
     n = 600851475143
     largest_prime = largest_prime_factor(n)
     print 'largest prime factor of {}: {}'.format(n, largest_prime)
+    # Problem 4:
     lower = 100
     upper = 1000
     result = largest_palindrome_product(lower, upper)
     print 'largest palindrome product of factors between {} and {} is: {} x {} = {}'.format(lower, upper, result['factor1'], result['factor2'], result['maxproduct'])
+    # Problem 5
+    lower = 1
+    upper = 20
+    result = smallest_multiple_factors(lower, upper)
+    print 'Smallest multiple of each of the numbers from {} to {} is: {}'.format(lower, upper, result)
+    # Problem 6
+    lower = 1
+    upper = 100
+    result = find_sum_square_difference(lower, upper)
+    print 'The difference between the squared sum and the sum of squares of the numbers {} through {} is: {}'.format(lower, upper, result)
+    # Problem 7
+    n = 10001
+    result = find_nth_prime(n)
+    print 'Prime number {} is: {}'.format(n, result)
+    # Problem 8
+    series = 7316717653133062491922511967442657474235534919493496983520312774506326239578318016984801869478851843858615607891129494954595017379583319528532088055111254069874715852386305071569329096329522744304355766896648950445244523161731856403098711121722383113622298934233803081353362766142828064444866452387493035890729629049156044077239071381051585930796086670172427121883998797908792274921901699720888093776657273330010533678812202354218097512545405947522435258490771167055601360483958644670632441572215539753697817977846174064955149290862569321978468622482839722413756570560574902614079729686524145351004748216637048440319989000889524345065854122758866688116427171479924442928230863465674813919123162824586178664583591245665294765456828489128831426076900422421902267105562632111110937054421750694165896040807198403850962455444362981230987879927244284909188845801561660979191338754992005240636899125607176060588611646710940507754100225698315520005593572972571636269561882670428252483600823257530420752963450
+    test_series = 221410998912301
+    length = 13
+    result_dict = find_largest_product(series, length)
+    factors_list = result_dict['factors']
+    product = result_dict['product']
+    var_string = '{} x ' * (length - 1) + '{} = {answer}'
+    print var_string
+    print 'The largest product in the series is ' + var_string.format(*factors_list, answer=product)
+    '''
+    # Problem 9
+
+
 
 
 
