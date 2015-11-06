@@ -329,10 +329,20 @@ def is_pythagorean(a, b, c):
         return False
 
 def find_special_pythagorean(target_sum):
-    #i, j, k = 0
     special_triplet_product = 0
-    while special_triplet_product == 0:
-        for i in range(target_sum + 1):
+    result = {}
+    for i in range(target_sum):
+        for j in range(i+1, target_sum + 1):
+            if special_triplet_product != 0:
+                break
+            k = target_sum - j - i
+            print i, j, k
+            if is_pythagorean(i, j, k):
+                special_triplet_product = i * j * k
+                result['triplet'] = [i, j, k]
+                result['product'] = special_triplet_product
+    return result
+
 
 
 
@@ -389,7 +399,10 @@ def main():
     print 'The largest product in the series is ' + var_string.format(*factors_list, answer=product)
     '''
     # Problem 9
-
+    result_dict = find_special_pythagorean(1000)
+    triplet = result_dict['triplet']
+    product = result_dict['product']
+    print 'The special Pythagorean triplet whose sum is 1000 is: {}, {} and {}. Their product is {}'.format(triplet[0], triplet[1], triplet[2], product)
 
 
 
