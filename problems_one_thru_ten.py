@@ -343,6 +343,35 @@ def find_special_pythagorean(target_sum):
                 result['product'] = special_triplet_product
     return result
 
+#----------------------------------------------------------------------------------------------------------------------
+
+'''
+Problem 10: Summation of Primes
+The sum of the primes < 10 is: 2 + 3 + 5 + 7 = 17
+Find the sum of all the primes below two million.
+'''
+
+def is_nonprime(anumber):
+    '''
+    because get_prime_factors is costly, this does a quick and dirty screen for NON-primeness before confirming that a number is truly prime. Most numbers will be pretty easily screened out, significantly lowering the number of candidates that need to be fully tested for primeness
+    :param anumber: integer
+    :return True or False
+    '''
+    for each in range(2, 14):
+        if each != anumber:
+            if anumber % each == 0:
+                return True
+    return False
+
+
+def sum_primes(ceiling):
+    sumprimes = 0
+    for i in range(ceiling):
+        if not is_nonprime(i):
+            if is_prime(i):
+                print i
+                sumprimes += i
+    return sumprimes
 
 
 
@@ -397,12 +426,16 @@ def main():
     var_string = '{} x ' * (length - 1) + '{} = {answer}'
     print var_string
     print 'The largest product in the series is ' + var_string.format(*factors_list, answer=product)
-    '''
     # Problem 9
     result_dict = find_special_pythagorean(1000)
     triplet = result_dict['triplet']
     product = result_dict['product']
     print 'The special Pythagorean triplet whose sum is 1000 is: {}, {} and {}. Their product is {}'.format(triplet[0], triplet[1], triplet[2], product)
+    '''
+    # Problem 10
+    ceiling = 2000000
+    answer = sum_primes(ceiling)
+    print 'The sum of primes < {} is {}'.format(ceiling, answer)
 
 
 
