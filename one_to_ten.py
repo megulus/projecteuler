@@ -353,7 +353,9 @@ Find the sum of all the primes below two million.
 
 def is_nonprime(anumber):
     '''
-    quick and dirty screen for NON-primeness before confirming that a number is truly prime. Most numbers will be pretty easily screened out, significantly lowering the number of candidates that need to be fully tested for primeness
+    quick and dirty screen for NON-primeness before confirming that a number is truly prime. Most numbers
+    will be pretty easily screened out, significantly lowering the number of candidates that need to be fully
+    tested for primeness
     :param anumber: integer
     :return True or False
     '''

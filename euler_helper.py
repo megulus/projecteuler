@@ -2,6 +2,18 @@
 Gathering some of the functions that will be generally useful to solving the Project Euler problems.
 '''
 
+# read in a file line by line
+def get_file_lines(filename):
+    lines = []
+    try:
+        with open(filename, 'r') as my_file:
+            for line in my_file:
+                lines.append(line.rstrip())
+        return lines
+    except IOError:
+        print "Unable to open file {}".format(filename)
+        sys.exit()
+
 
 def is_nonprime(anumber):
     '''
